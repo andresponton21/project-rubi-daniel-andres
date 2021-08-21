@@ -1,0 +1,37 @@
+<%- include('partials/header.ejs') -%>
+
+    <!-- Content for TASK PROFILE page -->
+    <main class="main">
+        <!-- Link to the HOME PAGE -->
+        <p class="crumbs"><a href="/">Home</a><span>&#187;</span><span>Task id:<%= task.id %></span></p>
+        <!-- Heading of TASK PROFILE PAGE-->
+        <h1 class="profileHeading">Task profile:</h1>
+
+        <!-- Task profile information -->
+        <div class="profileWrap">
+            <!-- Tags -->
+            <div class="profileTags">
+                <p>Description:
+                </p>
+                <p>ID:
+                </p>
+                <p>Status:
+                </p>
+            </div>
+            <!-- Retrieve and display information of the task -->
+            <div class="profileValues">
+                <p>
+                    <%= task.name %>
+                </p>
+                <p>
+                    <%= task.id %>
+
+                </p>
+                <p>
+                    <%=(task.checked==1) ? "Done" : "Pending" %>
+                </p>
+            </div>
+        </div>
+    </main>
+
+    <%- include('partials/footer.ejs') -%>

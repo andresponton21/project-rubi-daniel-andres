@@ -1,0 +1,19 @@
+<!-- Container for filter buttons -->
+<div class="filters">
+
+        <!-- Add "filter" class to all the anchors -->
+        <!-- Add "filterActive" class to the anchor that was clicked-->
+        <!-- Add "filterInactive" class to the rest of the anchors-->
+
+        <!-- SENDING "ALL" TO GET ALL THE ITEMS-->
+        <div> <a href="/" class="<%=(check.status==`ALL`) ? 'filter filterActive' : 'filter filterInactive' %>">ALL</a>
+        </div>
+        <!-- SENDING "1" TO FILTER ONLY CHECKED ITEMS-->
+        <div> <a href="/1" class="<%=(check.status==`1`) ? 'filter filterActive' : 'filter filterInactive' %>">DONE</a>
+        </div>
+        <!-- SENDING "0" TO FILTER ONLY UNCHECKED TIEMS-->
+        <div>
+                <a href="/0"
+                        class="<%=(check.status==`0`) ? 'filter filterActive' : 'filter filterInactive' %>">PENDING</a>
+        </div>
+</div>

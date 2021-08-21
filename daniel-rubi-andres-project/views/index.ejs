@@ -1,0 +1,185 @@
+<%- include('partials/header.ejs') -%>
+
+  <!-- Content for HOME PAGE	 -->
+  <main class="main">
+    <h1 class="appName">TO DO LIST</h1>
+
+    <!-- Include a form to add a task -->
+    <%- include('partials/add-task.ejs') -%>
+
+
+
+      <!-- Include filters buttons -->
+      <%- include('partials/filterTask.ejs' , {ostatus: check}) -%>
+
+
+        <!-- Creater dynamic elements when the task array it not empty -->
+        <%if(tasks.length> 0){%>
+          <!-- Use <ul> as a root container to pupulate it with the task items -->
+          <ul class="ulTasks">
+
+            <!-- Create dynamic elements for each task that exists  -->
+            <% tasks.forEach(task=> { %>
+              <!-- Item row -->
+              <li class="itemrow" id="<%= task.id %>">
+
+                <!-- Item information Container -->
+                <div class="iteInfoContainer">
+
+                  <!-- Checkbox -->
+                  <div class="divCheck">
+                    <input class="checkbox" <%=(task.checked==1) ? 'checked="true"' : '' %>
+                    type="checkbox" name="<%=task.name %>" id="check-<%= task.id %>">
+                  </div>
+
+
+                  <div class="labelFormControls">
+                    <!-- Information container to display the name, link to task profile and edit button -->
+                    <div class="labelEdit inForm">
+                      <div class="labelAnchor">
+                        <!-- Laber for checkbox -->
+                        <!-- Add the style to the label when the checkbox is checked-->
+                        <label style="<%=(task.checked==1) ? 'text-decoration: line-through; color:blue; opacity: 0.5;'
+											: '' %>" class="labelforCheck" for="check-<%= task.id %>">
+                          <%=task.name %>
+                        </label>
+                        <!-- Link to TASK PROFILE PAGE -->
+                        <a class="itemLinkInfo" href="/task/<%= task.id %>">i</a>
+                      </div>
+                      <button class="edit"></button>
+                    </div>
+
+                    <!-- Container to display the form to update the name of the task -->
+                    <form class="hide upform" action="/update-task-submit" method="post">
+                      <div class="inputIdName">
+                        <input type="hidden" value="<%= task.id %>" name="id" />
+                        <input class="editName" type="text" value="<%= task.name %>" name="name"
+                          placeholder="<%= task.name %>" />
+                      </div>
+                      <!-- Button to update the new name -->
+                      <input class="inputUpdate" type="submit" value="" />
+                    </form>
+                  </div>
+                </div>
+
+                <!-- Button to delet a task -->
+                <div class="divDelete">
+                  <button class="delete"></button>
+                </div>
+
+
+              </li>
+              <% }) %>
+
+          </ul>
+          <%} else {%>
+            <!-- Message when the list is empty -->
+            <p>No tasks </p>
+
+            <%}%>
+
+  </main>
+
+  <%- include('partials/footer.ejs') -%>
+
+
+
+
+    <!-- ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: -->
+    <!-- ::::::::::::::::::::::::::::   <script>     ::::::::::::::::::::::::::::::::: -->
+    <!-- ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: -->
+
+    <script>
+      window.addEventListener("DOMContentLoaded", function () {
+        console.log(`loaded`)
+
+
+        // DELETE task -------------------------------------------------------------------
+        const deleteHandler = (event) => {
+          // Send id of the item row to delete a task 
+          fetch("/delete-task", {
+            method: "post",
+            headers: {
+              Accept: "application/json",
+              "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ id: event.currentTarget.closest(".itemrow").id })
+          }).then(res => {
+            console.log(`deleted`,)
+            window.location.reload()
+          }).catch((err) => console.log("err", err))
+
+        }
+
+
+        //UPDATE CHECKED status of the task -------------------------------------------------------
+        const checkHandler = (event) => {
+          //Storage the cheked status of the task
+          let check = event.currentTarget.checked ? 1 : 0
+          // Send id of the item row to delete a task. Send the cheked status 
+          fetch("/check-task", {
+            method: "post",
+            headers: {
+              Accept: "application/json",
+              "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ id: event.currentTarget.closest(".itemrow").id, checked: check })
+          }).then(res => {
+            console.log(`Cheked updated`)
+            window.location.reload()
+          }).catch((err) => console.log("err", err))
+        }
+
+
+        // OPEN FORM to edit name of the task --------------------------------------------------
+        const openEditForm = (event) => {
+          //Closes labelEdit container
+          const labelEdit = event.currentTarget.closest(".itemrow").children[0].children[1].children[0]
+          //Closes editform container
+          const editForm = event.currentTarget.closest(".itemrow").children[0].children[1].children[1]
+          //Closes inputEditName        
+          const inputEditName = event.currentTarget.closest(".itemrow").children[0].children[1].children[1].children[0].children[1]
+
+          //Hide all editForm 
+          Array.from(document.getElementsByClassName("upform")).forEach((form) => {
+            form.classList.remove("editForm")
+            form.classList.add("hide")
+          })
+
+          //Display all labelEdit
+          Array.from(document.getElementsByClassName("inForm")).forEach((form) => {
+            form.classList.add("labelEdit")
+            form.classList.remove("hide")
+          })
+
+          //HIDE the closes labelEdit container
+          labelEdit.classList.remove("labelEdit")
+          labelEdit.classList.add("hide")
+          //DISPLAY the closes editform container
+          editForm.classList.remove("hide")
+          editForm.classList.add("editForm")
+          //FOCUS the closes inputEditName 
+          inputEditName.focus()
+          inputEditName.style.outline = 0
+        }
+
+
+
+
+        // CALL deleteHandler function when clicking delete button
+        Array.from(document.getElementsByClassName("delete")).forEach((btn) => {
+          btn.addEventListener("click", deleteHandler, false)
+        })
+
+        // CALL  checkHandler function when clicking checkbox
+        Array.from(document.getElementsByClassName("checkbox")).forEach((checkbox) => {
+          checkbox.addEventListener("click", checkHandler, false)
+        })
+
+        // CALL openEditForm function when clicking edit button
+        Array.from(document.getElementsByClassName("edit")).forEach((btn) => {
+          btn.addEventListener("click", openEditForm, false)
+        })
+      })
+
+    </script>
